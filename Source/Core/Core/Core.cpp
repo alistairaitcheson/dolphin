@@ -11,6 +11,9 @@
 #include <utility>
 #include <variant>
 
+#include <string>
+#include <iostream>
+
 #include <fmt/chrono.h>
 #include <fmt/format.h>
 
@@ -68,6 +71,8 @@
 #include "Core/PowerPC/PowerPC.h"
 #include "Core/State.h"
 #include "Core/WiiRoot.h"
+
+#include "Core/HW/Memmap.h"
 
 #ifdef USE_MEMORYWATCHER
 #include "Core/MemoryWatcher.h"
@@ -1114,12 +1119,25 @@ void DoFrameStep()
     s_stop_frame_step = false;
     s_frame_step = true;
     SetState(State::Running);
+
+      // here's where I add the checks!
+    std::string runningString = "ALISTAIR?\n";
+    for (u32 i = 0; i < Memory::GetRamSizeReal(); i++)
+    {
+      if (PowerPC::HostRead_U8(i) == 2)
+      {
+        runningString += std::to_string(i) + "\n";
+      }
+    }
+    std::cout << runningString;
   }
   else if (!s_frame_step)
   {
     // if not paused yet, pause immediately instead
     SetState(State::Paused);
   }
+
+
 }
 
 void UpdateInputGate(bool require_focus, bool require_full_focus)
