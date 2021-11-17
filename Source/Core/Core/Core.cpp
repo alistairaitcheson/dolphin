@@ -155,13 +155,45 @@ void FrameUpdateOnCPUThread()
     NetPlay::NetPlayClient::SendTimeBase();
 }
 
+int alistair_frame_count = 0;
+
 void OnFrameEnd()
 {
 #ifdef USE_MEMORYWATCHER
   if (s_memory_watcher)
     s_memory_watcher->Step();
 #endif
-}
+
+  // ALISTAIR TIME? THIS UPDATES ONCE PER FRAME
+
+        // here's where I add the checks!
+  if (alistair_frame_count % 100 == 0)
+  {
+    std::string runningString = "ALISTAIR?";
+
+    // Instead check for save files that request inputs
+    // and then output to another file.
+    /*
+    for (u32 i = 0; i < Memory::GetRamSizeReal(); i++)
+    {
+      if (PowerPC::HostRead_U8(i) == 2)
+      {
+        runningString += std::to_string(i) + "\n";
+      }
+    }
+    DisplayMessage(runningString, 1000);
+    */
+
+    // Sonic Adventure 2 Battle: 0x801b3dcc
+    // Sonic Adventure DX: 0x8074c7a9
+    // Sonic Heroes: 0x80303d2b, 0x809dd13f, 0x809dd143
+    // Shadow the Hedgehog: 0x8057670f
+  }
+
+  // DisplayMessage("HELLO WORLD", 100);
+
+  alistair_frame_count++;
+ }
 
 // Display messages and return values
 
@@ -1119,17 +1151,6 @@ void DoFrameStep()
     s_stop_frame_step = false;
     s_frame_step = true;
     SetState(State::Running);
-
-      // here's where I add the checks!
-    std::string runningString = "ALISTAIR?\n";
-    for (u32 i = 0; i < Memory::GetRamSizeReal(); i++)
-    {
-      if (PowerPC::HostRead_U8(i) == 2)
-      {
-        runningString += std::to_string(i) + "\n";
-      }
-    }
-    std::cout << runningString;
   }
   else if (!s_frame_step)
   {
